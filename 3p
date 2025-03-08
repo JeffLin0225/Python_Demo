@@ -1,0 +1,29 @@
+from transformers import BlipProcessor, BlipForConditionalGeneration
+from PIL import Image
+
+def process_image(image_path, release_memory=True):
+    processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+    model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+
+    image = Image.open(image_path).convert("RGB")
+    inputs = processor(images=image, return_tensors="pt")
+    generated_ids = model.generate(**inputs)
+    caption = processor.decode(generated_ids[0], skip_special_tokens=True)
+    print("生成的描述：", caption)
+
+    if release_memory:
+        del model
+        del processor
+        print("記憶體已釋放")
+    else:
+        print("模型保留在記憶體中")
+
+# 互動迴圈
+while True:
+    image_path = input("輸入圖片路徑（或 'exit' 退出）：")
+    if image_path.lower() == "exit":
+        break
+    try:
+        process_image(image_path, release_memory=True)  # 可改為 False 保留模型
+    except FileNotFoundError:
+        print("錯誤：圖片路徑無效，請檢查！")

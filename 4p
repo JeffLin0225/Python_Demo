@@ -1,0 +1,29 @@
+import requests
+from transformers import BlipProcessor, BlipForConditionalGeneration
+from PIL import Image
+
+# 加載 BLIP 並生成描述
+processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+
+image = Image.open("/Users/yourname/test.jpg").convert("RGB")
+inputs = processor(images=image, return_tensors="pt")
+generated_ids = model.generate(**inputs)
+caption = processor.decode(generated_ids[0], skip_special_tokens=True)
+print("生成的描述：", caption)
+
+# 釋放 BLIP 記憶體
+del model
+del processor
+print("BLIP 記憶體已釋放")
+
+# 將描述傳給 ollama
+prompt = f"我有一張圖片，描述如下：{caption}。我可以做什麼？"
+try:
+    response = requests.post(
+        "http://localhost:11434/api/generate",
+        json={"model": "llama3.2", "prompt": prompt}
+    )
+    print("Llama 回應：", response.json()["response"])
+except requests.ConnectionError:
+    print("錯誤：請確保 ollama 正在運行（localhost:11434）")

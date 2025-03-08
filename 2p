@@ -1,0 +1,27 @@
+from transformers import BlipProcessor, BlipForConditionalGeneration
+from PIL import Image
+
+def process_image(image_path):
+    # 加載模型
+    processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+    model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+
+    # 處理圖片
+    image = Image.open(image_path).convert("RGB")
+    inputs = processor(images=image, return_tensors="pt")
+    generated_ids = model.generate(**inputs)
+    caption = processor.decode(generated_ids[0], skip_special_tokens=True)
+    print(f"{image_path} 的描述：", caption)
+
+    # 釋放記憶體
+    del model
+    del processor
+    print(f"{image_path} 處理完成，記憶體已釋放")
+
+# 測試多張圖片
+image_paths = [
+    "/Users/yourname/test1.jpg",
+    "/Users/yourname/test2.jpg",
+]
+for path in image_paths:
+    process_image(path)

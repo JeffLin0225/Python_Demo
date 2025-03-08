@@ -1,0 +1,5 @@
+[POST]  http://localhost:5001/caption
+
+form-data 
+[FILE] 
+key: image , value: [file]  
