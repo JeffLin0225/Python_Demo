@@ -20,11 +20,3 @@ docker exec -it ollama bash
 
 exit
 
-######################## request字串 ########################
-
-[POST] http://localhost:11434/api/generate
-
-{
-  "model": "llama3.2:3b",
-  "prompt": "你好啊我是家賢？"
-}
