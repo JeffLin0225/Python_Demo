@@ -45,3 +45,8 @@ print("Documents:", results["documents"])
 print("Metadatas:", results["metadatas"])
 print("Distances:", results["distances"])
 print("Embeddings:", results["embeddings"])
+
+""" [查詢 ＊ ] 所有在DB裡面的資料 """
+data_in_collection = testCollect.get()
+print("所有結果：")
+print(data_in_collection)
